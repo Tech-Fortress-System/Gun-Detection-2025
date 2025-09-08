@@ -68,3 +68,4 @@ python
 hd_cam = cv2.VideoCapture(0)
 thermal_cam = cv2.VideoCapture(1)
 # Gun-Detection-2025
+```
