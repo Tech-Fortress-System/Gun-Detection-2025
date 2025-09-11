@@ -1,5 +1,5 @@
 #!/bin/sh
-'''exec' "/Users/mhlangovuyobalfour/Gun Detection 2025/yolov5/yolov5-env/bin/python3" "$0" "$@"
+'''exec' "/Users/mhlangovuyobalfour/Gun Detection 2025/yolov5/yolov5-env/bin/python3.11" "$0" "$@"
 ' '''
 import sys
 from fontTools.merge import main
