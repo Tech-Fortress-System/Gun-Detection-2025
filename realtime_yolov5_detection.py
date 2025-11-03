@@ -1,14 +1,15 @@
+import os
+import smtplib
+import ssl
+import threading
+import traceback
+from datetime import datetime
+from email.message import EmailMessage
+
 import cv2
 import torch
-import smtplib
-from email.message import EmailMessage
-import ssl
-import os
-from datetime import datetime
-import threading
-from twilio.rest import Client
 from dotenv import load_dotenv
-import traceback
+from twilio.rest import Client
 
 # ------------------- LOAD ENV VARIABLES -------------------
 load_dotenv()
@@ -31,7 +32,7 @@ IMAGE_SAVE_PATH = "gun_detection.jpg"
 # ------------------- LOAD YOLOv5 FIREARM MODEL -------------------
 print("🔄 Loading custom YOLOv5 firearm model...")
 model_path = "best_gun_model.pt"  # Make sure this file exists in your project folder
-model = torch.hub.load('ultralytics/yolov5', 'custom', path=model_path, trust_repo=True)
+model = torch.hub.load("ultralytics/yolov5", "custom", path=model_path, trust_repo=True)
 print("✅ Custom YOLOv5 firearm model loaded.")
 
 # ------------------- GLOBAL VARIABLES -------------------
@@ -43,6 +44,7 @@ cap = cv2.VideoCapture(0)  # Use webcam 0
 # Define the firearm classes your custom model recognizes
 FIREARM_CLASSES = ["gun", "pistol", "rifle"]  # Adjust based on your model labels
 
+
 # ------------------- ALERT FUNCTION -------------------
 def alert_security(image_path):
     """Send email and WhatsApp alerts when a firearm is detected."""
@@ -51,11 +53,11 @@ def alert_security(image_path):
     with alert_lock:
         now = datetime.now()
         if last_alert_time:
-            elapsed = (now - datetime.strptime(last_alert_time, '%Y-%m-%d %H:%M:%S')).total_seconds()
+            elapsed = (now - datetime.strptime(last_alert_time, "%Y-%m-%d %H:%M:%S")).total_seconds()
             if elapsed < DETECTION_COOLDOWN:
                 return
 
-        last_alert_time = now.strftime('%Y-%m-%d %H:%M:%S')
+        last_alert_time = now.strftime("%Y-%m-%d %H:%M:%S")
         print(f"[ALERT] Firearm detected at {last_alert_time}.")
 
         # ----- Email Alert -----
@@ -67,14 +69,14 @@ Camera Location: {CAMERA_LOCATION}
 Time: {last_alert_time}
 
 See attached image.""")
-            msg['Subject'] = "Security Alert - Firearm Detected"
-            msg['From'] = EMAIL_SENDER
-            msg['To'] = EMAIL_RECEIVER
+            msg["Subject"] = "Security Alert - Firearm Detected"
+            msg["From"] = EMAIL_SENDER
+            msg["To"] = EMAIL_RECEIVER
 
-            with open(image_path, 'rb') as img_file:
-                msg.add_attachment(img_file.read(), maintype='image', subtype='jpeg', filename="detection.jpg")
+            with open(image_path, "rb") as img_file:
+                msg.add_attachment(img_file.read(), maintype="image", subtype="jpeg", filename="detection.jpg")
 
-            with smtplib.SMTP_SSL('smtp.gmail.com', 465, context=ssl.create_default_context()) as smtp:
+            with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=ssl.create_default_context()) as smtp:
                 smtp.login(EMAIL_SENDER, EMAIL_PASSWORD)
                 smtp.send_message(msg)
             print("✅ Email alert sent.")
@@ -88,7 +90,7 @@ See attached image.""")
             message = client.messages.create(
                 body=f"🚨 ALERT: Firearm detected at {CAMERA_LOCATION} on {last_alert_time}.",
                 from_=WHATSAPP_FROM,
-                to=WHATSAPP_TO
+                to=WHATSAPP_TO,
             )
             print(f"✅ WhatsApp alert sent. SID: {message.sid}")
         except Exception as e:
@@ -96,6 +98,7 @@ See attached image.""")
             traceback.print_exc()
 
         alert_sent = True
+
 
 # ------------------- MAIN LOOP -------------------
 try:
@@ -112,7 +115,7 @@ try:
 
         # Reset alert_sent if cooldown elapsed
         if last_alert_time:
-            elapsed = (datetime.now() - datetime.strptime(last_alert_time, '%Y-%m-%d %H:%M:%S')).total_seconds()
+            elapsed = (datetime.now() - datetime.strptime(last_alert_time, "%Y-%m-%d %H:%M:%S")).total_seconds()
             if elapsed > DETECTION_COOLDOWN:
                 alert_sent = False
 
@@ -128,10 +131,10 @@ try:
         annotated_frame = results.render()[0]
 
         # Show the frame in a window
-        cv2.imshow('YOLOv5 Firearm Detection', annotated_frame)
+        cv2.imshow("YOLOv5 Firearm Detection", annotated_frame)
 
         # Press 'q' to quit
-        if cv2.waitKey(1) & 0xFF == ord('q'):
+        if cv2.waitKey(1) & 0xFF == ord("q"):
             break
 
 finally:

@@ -1,18 +1,21 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-<head>
+  <head>
     <title>Gun Detection Dashboard</title>
-</head>
-<body>
+  </head>
+  <body>
     <h1>Camera Location: {{ camera_location }}</h1>
     <p>Last Alert: {{ last_alert }}</p>
 
     {% if image_exists %}
-        <h2>Last Detection</h2>
-        <img src="{{ url_for('static', filename='gun_detection.jpg') }}" width="640">
+    <h2>Last Detection</h2>
+    <img
+      src="{{ url_for('static', filename='gun_detection.jpg') }}"
+      width="640"
+    />
     {% endif %}
 
     <h2>Live Feed</h2>
-    <img src="{{ url_for('video_feed') }}" width="640">
-</body>
+    <img src="{{ url_for('video_feed') }}" width="640" />
+  </body>
 </html>
